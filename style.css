@@ -19,3 +19,7 @@ button {
 button:hover {
   background-color: #2980b9;
 }
+
+body {
+  border: 5px solid red;
+}
