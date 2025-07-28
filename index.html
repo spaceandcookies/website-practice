@@ -18,5 +18,20 @@
       <button>Contact Us</button>
     </a>
   </div>
+
+  <div style="position: fixed; top: 20px; right: 20px;">
+  <a href="cart.html" style="text-decoration:none; font-weight:bold; color:#3498db;">
+    🛒 Cart (<span id="cart-count">0</span>)
+  </a>
+</div>
+
+<script>
+function updateCartCount() {
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const count = cart.reduce((total, item) => total + item.quantity, 0);
+  document.getElementById('cart-count').textContent = count;
+}
+updateCartCount();
+</script>
 </body>
 </html>

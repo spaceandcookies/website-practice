@@ -1,0 +1,33 @@
+<h1>Your Cart</h1>
+<div id="cart-items"></div>
+<p>Total: $<span id="total-price"></span></p>
+<button id="checkout-button">Checkout</button>
+
+<script>
+const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
+
+// Load cart from localStorage
+const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Render items
+let total = 0;
+const cartItemsDiv = document.getElementById('cart-items');
+cart.forEach(item => {
+  const div = document.createElement('div');
+  div.textContent = `${item.name} – $${(item.price / 100).toFixed(2)} x ${item.quantity}`;
+  cartItemsDiv.appendChild(div);
+  total += item.price * item.quantity;
+});
+document.getElementById('total-price').textContent = (total / 100).toFixed(2);
+
+// Send to backend and redirect to Stripe
+document.getElementById('checkout-button').addEventListener('click', () => {
+  fetch('/create-checkout-session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cart })
+  })
+  .then(res => res.json())
+  .then(data => stripe.redirectToCheckout({ sessionId: data.sessionId }));
+});
+</script>
