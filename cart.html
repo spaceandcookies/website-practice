@@ -1,33 +1,56 @@
-<h1>Your Cart</h1>
-<div id="cart-items"></div>
-<p>Total: $<span id="total-price"></span></p>
-<button id="checkout-button">Checkout</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+  <h1>Your Cart</h1>
+  <div id="cart-items"></div>
+  <p>Total: $<span id="cart-total">0</span></p>
+  <button id="checkout-button">Checkout</button>
 
-<script>
-const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
+  <script>
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// Load cart from localStorage
-const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItemsDiv = document.getElementById('cart-items');
+    const cartTotalSpan = document.getElementById('cart-total');
 
-// Render items
-let total = 0;
-const cartItemsDiv = document.getElementById('cart-items');
-cart.forEach(item => {
-  const div = document.createElement('div');
-  div.textContent = `${item.name} – $${(item.price / 100).toFixed(2)} x ${item.quantity}`;
-  cartItemsDiv.appendChild(div);
-  total += item.price * item.quantity;
-});
-document.getElementById('total-price').textContent = (total / 100).toFixed(2);
+    let total = 0;
 
-// Send to backend and redirect to Stripe
-document.getElementById('checkout-button').addEventListener('click', () => {
-  fetch('/create-checkout-session', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cart })
-  })
-  .then(res => res.json())
-  .then(data => stripe.redirectToCheckout({ sessionId: data.sessionId }));
-});
-</script>
+    cart.forEach(item => {
+      const div = document.createElement('div');
+      div.textContent = `${item.name} - $${(item.price / 100).toFixed(2)} × ${item.quantity}`;
+      cartItemsDiv.appendChild(div);
+      total += item.price * item.quantity;
+    });
+
+    cartTotalSpan.textContent = (total / 100).toFixed(2);
+
+    // Stripe logic
+    const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY'); // replace with your real public key from Stripe
+
+    document.getElementById('checkout-button').addEventListener('click', () => {
+      fetch('https://my-store-backend.onrender.com/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart: cart }) // send cart to backend
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.sessionId) {
+          return stripe.redirectToCheckout({ sessionId: data.sessionId });
+        } else {
+          alert('Checkout session failed to create.');
+        }
+      })
+      .catch(err => {
+        console.error('Error creating checkout session:', err);
+      });
+    });
+  </script>
+</body>
+</html>
