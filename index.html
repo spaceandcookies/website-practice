@@ -7,31 +7,54 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- Hamburger Button -->
+  <button id="openSidebar" class="hamburger">☰</button>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <button id="closeSidebar" class="close-btn">✖</button>
+    <nav>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="products.html">🛍️ Shop</a></li>
+        <li><a href="cart.html">🛒 Cart</a></li>
+        <li><a href="login.html">🔐 Login</a></li>
+        <li><a href="contact.html">📩 Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+
   <h1>Welcome to My Store</h1>
   <p>Products coming soon...</p>
 
   <div>
-    <a href="products.html">
-      <button>View Products</button>
-    </a>
-    <a href="contact.html">
-      <button>Contact Us</button>
-    </a>
+    <a href="products.html"><button>View Products</button></a>
+    <a href="contact.html"><button>Contact Us</button></a>
   </div>
 
   <div style="position: fixed; top: 20px; right: 20px;">
-  <a href="cart.html" style="text-decoration:none; font-weight:bold; color:#3498db;">
-    🛒 Cart (<span id="cart-count">0</span>)
-  </a>
-</div>
+    <a href="cart.html" style="text-decoration:none; font-weight:bold; color:#3498db;">
+      🛒 Cart (<span id="cart-count">0</span>)
+    </a>
+  </div>
 
-<script>
-function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const count = cart.reduce((total, item) => total + item.quantity, 0);
-  document.getElementById('cart-count').textContent = count;
-}
-updateCartCount();
-</script>
+  <script>
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const count = cart.reduce((total, item) => total + item.quantity, 0);
+      document.getElementById('cart-count').textContent = count;
+    }
+    updateCartCount();
+
+    // Sidebar open/close functionality
+    document.getElementById('openSidebar').addEventListener('click', () => {
+      document.getElementById('sidebar').style.left = '0';
+    });
+
+    document.getElementById('closeSidebar').addEventListener('click', () => {
+      document.getElementById('sidebar').style.left = '-250px';
+    });
+  </script>
 </body>
 </html>
